@@ -1,36 +1,50 @@
-import java.io.BufferedReader;
-import java.io.FileReader;
-import java.io.IOException;
-import java.util.ArrayList;
 import java.util.List;
 
 public class Main {
+
+
     public static void main(String[] args) {
-        List<DeathCauseStatistic> statistics = new ArrayList<>();
+        //Zadanie 1
+//        DeathCauseStatistic statistic=DeathCauseStatistic.fromCsvLine("A02.1          ,5,-,-,-,-,-,-,-,-,-,-,-,-,1,2,-,1,1,-,-,-");
+//        System.out.println(statistic.getKey());
+////        int[] arr=statistic.getAgeBracket();
+////        for(var a: arr){
+////            System.out.println(a);
+////        }
+//
+//        System.out.println(statistic.getDeaths(60));
 
-        try (BufferedReader br = new BufferedReader(new FileReader("zgony.csv"))) {
-            String line;
-            int lineNumber = 0;
+        //Zadanie 3a
+        DeathCauseStatisticsList statisticsList=new DeathCauseStatisticsList();
+        statisticsList.repopulate("zgony.csv");
+//        System.out.println(statisticsList.get(5).getKey());
 
-            while ((line = br.readLine()) != null) {
-                lineNumber++;
 
-                if (lineNumber == 1) continue; // pomiń nagłówek
-                if (line.startsWith("OGÓŁEM")) continue; // pomiń podsumowanie
 
-                DeathCauseStatistic stat = DeathCauseStatistic.fromCsvLine(line);
-                statistics.add(stat);
+        List<DeathCauseStatistic> mostDeadly= statisticsList.mostDeadlyDiseases(1,100);
+//        for(var diseases : mostDeadly)
+//            System.out.println(diseases.getKey());
+
+
+        //Zadanie 4
+        //DeathCauseStatisticsList deaths = new DeathCauseStatisticsList();
+        //deaths.repopulate("zgony.csv");
+
+        ICDCodeTabular codes = new ICDCodeTabularOptimizedForMemory("icd10.txt");
+        //System.out.println(codes.getDescription("A17.0"));
+
+        for(var diseases : mostDeadly) {
+            System.out.print(diseases.getKey());
+            System.out.print(" - ");
+            try {
+                System.out.println(codes.getDescription(diseases.getKey()));
+            } catch (IndexOutOfBoundsException e) {
+                System.out.println("???");
             }
-
-            // Przykładowe wypisanie wyników
-            for (DeathCauseStatistic stat : statistics) {
-                System.out.println("Linia nr " + lineNumber);
-                System.out.println("Kod ICD-10: " + stat.getIcd_10());
-                System.out.println("Zgony w grupie 0–4 lata: " + stat.deathCountByAge[0] + "\n");
-            }
-
-        } catch (IOException e) {
-            System.out.println("Błąd wczytywania pliku: " + e.getMessage());
         }
+
+
     }
+
+
 }
